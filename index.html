@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  FILE: canteen-pos-microsite/index.html
+  PURPOSE: Self-contained capstone showcase for the Smart POS Canteen System.
+  ROLE: Static, offline-first presentation page. Double-clicking this file opens
+        the whole site. All styling and JavaScript are inline; only screenshots,
+        the favicon and two documents live in assets/ and docs/.
+
+  HOW TO READ THIS FILE (comment legend) -->
+    <!-- ===== NN: NAME =====  = major HTML block (numbered in order)
+    /* ===== NN: NAME ===== */     = CSS rule group (same numbers as layout)
+    // STEP N: ...                 = one JavaScript action, in execution order
+    Inline <!-- ...comments   = explain a specific line or small group
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<!-- ===== 01: DOCUMENT HEAD - everything the browser reads before the page ===== -->
+<meta charset="UTF-8"> <!-- Text encoding: supports the Philippine peso sign and special characters -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Makes the site scale correctly on phones -->
+<title>Smart POS Canteen System for Talisay City College</title> <!-- Browser tab and search-result title -->
+
+<!-- SEO + sharing metadata: describes the site when linked or shared -->
+<meta name="description" content="Smart POS Canteen System for Talisay City College: features, real screenshots, guided workflow, research results and documentation.">
+<meta name="robots" content="noindex"> <!-- Remove this line before a public launch -->
+<meta property="og:image" content="assets/01-pos.png">
+<meta property="og:title" content="Smart POS Canteen System for Talisay City College">
+<meta property="og:description" content="A faster, more accurate way to run the Talisay City College canteen.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/png" href="assets/favicon.png"> <!-- App icon copied from the portable install -->
+
+<style>
+  /* ===== 01: DESIGN TOKENS - colours reused by every CSS rule below ===== */
+  :root {
+    --blue: #2563EB;       /* Primary accent, matches the real application */
+    --blue-dark: #1D4ED8;  /* Hover / pressed shade of the accent */
+    --ink: #0f172a;        /* Dark text and footer background */
+    --muted: #64748b;      /* Secondary, greyed-out text */
+    --bg: #f8fafc;         /* Page background */
+    --line: #e2e8f0;       /* Light borders between cards and sections */
+  }
+
+  /* ===== 02: BASE + RESET - sensible defaults for every element ===== */
+  * { box-sizing: border-box; }                 /* Padding never widens a box */
+  html { scroll-behavior: smooth; }             /* Nav links glide to their section */
+  body { margin: 0; font-family: "Segoe UI", Inter, Calibri, Arial, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; } /* Links use the accent, no underline by default */
+  a:hover { text-decoration: underline; }       /* Underline appears on hover */
+  img { max-width: 100%; display: block; }      /* Images never overflow their container */
+  :focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; } /* Keyboard focus ring */
+
+  /* ===== 03: SKIP LINK - keyboard users can jump past the navigation ===== */
+  .skip { position: absolute; left: -9999px; top: 0; background: #fff; padding: 10px 14px; z-index: 100; }
+  .skip:focus { left: 8px; top: 8px; }          /* Becomes visible only when tabbed to */
+
+  /* ===== 04: STICKY NAVIGATION - stays at the top while scrolling ===== */
+  .nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.97); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 6vw; flex-wrap: wrap; }
+  .brand { font-weight: 800; font-size: 17px; color: var(--ink); }
+  .brand span { color: var(--blue); }           /* Colours the "POS" part of SmartPOS */
+  .brand small { display: block; font-weight: 600; font-size: 11px; color: var(--muted); letter-spacing: .02em; }
+  .nav-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; font-weight: 600; }
+  .nav-links a { color: #334155; }
+
+  /* ===== 05: HERO - first screen: title, buttons and headline numbers ===== */
+  .hero { background: linear-gradient(135deg, #1e3a8a, var(--blue)); color: #fff; padding: 68px 6vw 60px; }
+  .hero-inner { max-width: 940px; margin: 0 auto; } /* Centres the hero content */
+  .tag { display: inline-block; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35); border-radius: 99px; padding: 4px 14px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(32px, 5.6vw, 54px); margin: 16px 0 10px; line-height: 1.12; }
+  .hero p.lead { font-size: 18px; max-width: 680px; color: #dbeafe; margin: 0 0 24px; }
+  .buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; border: 2px solid transparent; }
+  .btn-primary { background: #fff; color: var(--blue-dark); } /* Main "View the live demo" button */
+  .btn-primary:hover { background: #eff6ff; text-decoration: none; }
+  .btn-ghost { border-color: rgba(255,255,255,.7); color: #fff; } /* Outlined secondary buttons */
+  .btn-ghost:hover { background: rgba(255,255,255,.12); text-decoration: none; }
+  .stats { display: flex; gap: 28px; margin-top: 34px; flex-wrap: wrap; }
+  .stats div { font-size: 13px; color: #bfdbfe; }
+  .stats strong { display: block; font-size: 25px; color: #fff; } /* Big number above each label */
+
+  /* ===== 06: SHARED SECTION LAYOUT - used by every section below the hero ===== */
+  section { padding: 52px 6vw; }
+  .container { max-width: 1040px; margin: 0 auto; } /* Keeps text lines readable on wide screens */
+  h2 { font-size: 27px; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 4px 14px rgba(15,23,42,.04); }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: #475569; font-size: 14px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 800; color: var(--blue); background: #eff6ff; border-radius: 99px; padding: 3px 10px; margin-bottom: 10px; }
+
+  /* ===== 07: VALIDATION + RATIONALE - green results strip and quote box ===== */
+  .validation { background: #ecfdf5; border-top: 1px solid #a7f3d0; border-bottom: 1px solid #a7f3d0; text-align: center; }
+  .validation p { max-width: 860px; margin: 0 auto; color: #065f46; font-size: 15px; }
+  .validation strong { font-size: 17px; }
+  blockquote { margin: 0; padding: 18px 22px; border-left: 4px solid var(--blue); background: #fff; border-radius: 0 12px 12px 0; color: #334155; font-size: 15px; }
+
+  /* ===== 08: WORKFLOW STEPS - three numbered cards in the "How it works" tour ===== */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; counter-reset: step; }
+  .step { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px 20px 20px 62px; }
+  .step::before { counter-increment: step; content: counter(step); position: absolute; left: 18px; top: 20px; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; } /* Draws the 1 / 2 / 3 circle */
+  .step h3 { margin: 0 0 4px; font-size: 16px; }
+  .step p { margin: 0; color: #475569; font-size: 14px; }
+
+  /* ===== 09: FEATURES - six small capability cards ===== */
+  .features { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .features .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .feature { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+  .feature .icon { font-size: 26px; }
+  .feature h3 { margin: 10px 0 6px; font-size: 16px; }
+  .feature p { margin: 0; font-size: 13px; color: #475569; }
+
+  /* ===== 10: SCREENSHOT GALLERY - clickable figures, one per captured screen ===== */
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .shots figure { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: zoom-in; }
+  .shots figure:hover { border-color: var(--blue); }
+  .shots img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; background: #eef2f7; } /* Crops the 1440x900 captures consistently */
+  .shots figcaption { padding: 10px 14px; font-size: 13px; font-weight: 600; }
+
+  /* ===== 11: LIGHTBOX - full-size image overlay opened by the gallery ===== */
+  .lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(15,23,42,.9); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .lightbox.open { display: flex; }              /* JS adds .open on click */
+  .lightbox img { max-width: 92vw; max-height: 82vh; border-radius: 8px; background: #fff; }
+  .lightbox button { position: absolute; top: 18px; right: 22px; background: #fff; border: 0; border-radius: 8px; font-size: 22px; width: 40px; height: 40px; cursor: pointer; }
+  .lightbox .caption { position: absolute; bottom: 18px; color: #e2e8f0; font-size: 13px; text-align: center; }
+
+  /* ===== 12: TEAM / STACK / CONTACT / FOOTER - remaining content blocks ===== */
+  .team { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .member { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .avatar { flex: 0 0 38px; height: 38px; border-radius: 50%; background: #eff6ff; color: var(--blue-dark); font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 13px; } /* Initials badge */
+  .member strong { display: block; font-size: 14px; }
+  .member small { color: var(--muted); font-size: 11px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { background: #fff; border: 1px solid var(--line); border-radius: 99px; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+  .resources { display: flex; flex-wrap: wrap; gap: 12px; }
+  .resources a { display: inline-block; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; font-weight: 700; font-size: 14px; }
+  details { margin-top: 16px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; font-size: 14px; } /* Collapsible demo-accounts panel */
+  summary { font-weight: 700; cursor: pointer; }
+  code { background: #eef2f7; border-radius: 5px; padding: 1px 5px; font-size: .92em; }
+  footer { background: var(--ink); color: #cbd5e1; text-align: center; padding: 30px 6vw; font-size: 13px; }
+  footer a { color: #93c5fd; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 14px; }
+
+  /* ===== 13: RESPONSIVE - tighter spacing on small screens ===== */
+  @media (max-width: 600px) {
+    .hero { padding: 48px 6vw; }
+    .stats { gap: 18px; }
+    section { padding: 38px 6vw; }
+    .nav { padding: 10px 5vw; }
+  }
+
+  /* ===== 14: PRINT - Ctrl+P handout: hide UI, avoid split sections ===== */
+  @media print {
+    .nav, .buttons, .lightbox, .skip { display: none !important; }
+    body { background: #fff; }
+    .hero { padding: 26px; }
+    section { padding: 22px 0; break-inside: avoid; }
+    .card, .feature, .step, .shots figure { box-shadow: none; }
+    a { color: inherit; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a> <!-- Hidden until focused by keyboard -->
+
+<!-- ===== 02: SITE NAVIGATION - anchor links jump to the numbered sections ===== -->
+<header class="nav">
+  <div class="brand">Smart<span>POS</span> | Capstone
+    <small>Talisay City College</small>
+  </div>
+  <nav class="nav-links" aria-label="Main navigation">
+    <a href="#about">About</a>          <!-- -> Section 04 -->
+    <a href="#workflow">How it works</a><!-- -> Section 05 -->
+    <a href="#features">Features</a>    <!-- -> Section 06 -->
+    <a href="#screenshots">Screenshots</a><!-- -> Section 07 -->
+    <a href="#team">Team</a>            <!-- -> Section 09 -->
+    <a href="#resources">Docs</a>       <!-- -> Section 11 -->
+  </nav>
+</header>
+
+<main id="main">
+  <!-- ===== 03: HERO - project identity, three calls to action, verified numbers ===== -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <span class="tag"> &middot; November 2026</span> <!-- Date taken from manuscript cover -->
+      <h1>Smart POS Canteen System for Talisay City College</h1>
+      <p class="lead">A faster, more accurate way to run the school canteen - from product selection and instant change calculation to live sales, inventory and finance reports.</p>
+      <div class="buttons">
+        <a class="btn btn-primary" href="#workflow">See how it works</a> <!-- Web edition: the local demo link is intentionally omitted -->
+        <a class="btn btn-ghost" href="#screenshots">See the screenshots</a>
+        <a class="btn btn-ghost" href="docs/canteen-pos-appendix.html">Read the documentation</a>
+      </div>
+      <div class="stats">
+        <div><strong>36</strong> active products</div>   <!-- Counted from live DB: 37 total, 36 active -->
+        <div><strong>10</strong> categories</div>        <!-- Counted from live DB -->
+        <div><strong>17</strong> database tables</div>    <!-- Counted from live DB -->
+        <div><strong>200</strong> survey respondents</div><!-- Manuscript scope, p. 22 -->
+        <div><strong>3.45/4.00</strong> user-friendliness</div><!-- Highest-rated criterion, p. 52 -->
+      </div>
+      <p class="note" style="color:#dbeafe;">This web edition shows the real screens and documentation. The portable POS itself runs locally on a computer and is not hosted here.</p>
+    </div>
+  </section>
+
+  <!-- ===== 04: VALIDATION + ABOUT - results banner, problem/solution, rationale quote ===== -->
+  <section class="validation" aria-label="Research validation">
+    <div class="container">
+      <p><strong>Evaluated by 200 students, personnel and canteen staff.</strong> Ordering, inventory, sales and user-friendliness were all rated <strong>Highly Acceptable</strong> on the study's four-point scale.</p>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <h2>The problem and the solution</h2>
+      <p class="sub">What inspired the project and what the finished system does about it.</p>
+      <div class="grid2">
+        <div class="card">
+          <span class="badge">The problem</span>
+          <h3>Slow lines, manual tallying</h3>
+          <p>Canteen staff handle many small orders at once. Writing orders by hand and counting change slows the queue down, and sales totals are only known at the end of the day.</p>
+        </div>
+        <div class="card">
+          <span class="badge">Our solution</span>
+          <h3>One screen for every sale</h3>
+          <p>Cashiers tap products, adjust quantities, choose dine-in or take-out and get the exact change instantly. Every sale updates stock, receipts and dashboards automatically.</p>
+        </div>
+      </div>
+      <p class="sub" style="margin:28px 0 12px;">Rationale of the program</p>
+      <blockquote>"A Smart Point-of-Sale (POS) Canteen System can make canteen operations faster, more organized, and more convenient for students and staff at Talisay City College." The system replaces handwritten orders and manual counting with recorded, searchable and reportable transactions.</blockquote>
+    </div>
+  </section>
+
+  <!-- ===== 05: HOW IT WORKS - the three-stop guided demonstration ===== -->
+  <section class="features" id="workflow">
+    <div class="container">
+      <h2>How it works</h2>
+      <p class="sub">The same three-stop tour used in the capstone demonstration.</p>
+      <div class="steps">
+        <div class="step"><h3>Sign in</h3><p>Admin and cashier accounts open the right workspace, with role-based access and optional two-factor verification.</p></div>
+        <div class="step"><h3>Take an order at the POS</h3><p>Search or filter products, add variants, set dine-in or take-out, then accept cash and see the exact change.</p></div>
+        <div class="step"><h3>Review sales in admin</h3><p>Check the dashboard, approve void requests, monitor low stock and close the day with sales and finance reports.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 06: FEATURES - six capability cards shown at the booth ===== -->
+  <section id="features">
+    <div class="container">
+      <h2>What it can do</h2>
+      <p class="sub">Core features demonstrated in the working prototype.</p>
+      <div class="features" style="background:transparent;border:0;padding:0;">
+        <div class="grid">
+          <div class="feature"><div class="icon">&#9889;</div><h3>Fast POS checkout</h3><p>Searchable product grid, cart, variants and one-tap cash buttons for quick transactions.</p></div>
+          <div class="feature"><div class="icon">&#128203;</div><h3>Stock &amp; variants</h3><p>Sizes and flavors with their own prices and stock levels; low-stock warnings on the dashboard.</p></div>
+          <div class="feature"><div class="icon">&#127915;</div><h3>Queue &amp; tickets</h3><p>Queue numbers and order tickets keep pickup organized during a rush.</p></div>
+          <div class="feature"><div class="icon">&#9989;</div><h3>Void approvals</h3><p>Cashiers request a cancellation; an admin approves it, with stock and audit logs updated.</p></div>
+          <div class="feature"><div class="icon">&#128202;</div><h3>Sales &amp; finance</h3><p>Daily closing, sales charts, cashier performance, expenses and profit summaries.</p></div>
+          <div class="feature"><div class="icon">&#128190;</div><h3>Backup &amp; restore</h3><p>One-click database backups, restore tools and an environment doctor for easy setup on another PC.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 07: SCREENSHOT GALLERY - six real captures; JS opens them full-size ===== -->
+  <section id="screenshots" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+    <div class="container">
+      <h2>Screenshots</h2>
+      <p class="sub">Captured from the running application. Click any image to enlarge it.</p>
+      <div class="shots">
+        <figure data-caption="Sign-in screen with role-based access">
+          <img src="assets/00-login.png" alt="Smart POS sign-in screen with username and password fields">
+          <figcaption>1. Sign in</figcaption>
+        </figure>
+        <figure data-caption="POS screen - product grid and cart">
+          <img src="assets/01-pos.png" alt="Cashier POS screen showing product grid and cart">
+          <figcaption>2. Cashier POS screen</figcaption>
+        </figure>
+        <figure data-caption="Checkout - cash, change and order type">
+          <img src="assets/02-checkout.png" alt="Checkout dialog showing total, cash tendered and change">
+          <figcaption>3. Checkout and change</figcaption>
+        </figure>
+        <figure data-caption="Admin dashboard - sales and low-stock alerts">
+          <img src="assets/03-dashboard.png" alt="Administrator dashboard with sales and inventory cards">
+          <figcaption>4. Admin dashboard</figcaption>
+        </figure>
+        <figure data-caption="Sales page - orders and void requests">
+          <img src="assets/04-sales.png" alt="Sales page listing recorded orders and void requests">
+          <figcaption>5. Sales and void requests</figcaption>
+        </figure>
+        <figure data-caption="Finance page - expenses and profit summary">
+          <img src="assets/05-finance.png" alt="Finance page with expenses and profit summary">
+          <figcaption>6. Sales &amp; finance</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 08: STACK - technology chips; corrected from Tailwind to Custom CSS ===== -->
+  <section id="stack">
+    <div class="container">
+      <h2>Built with</h2>
+      <p class="sub">A lightweight stack that runs from a portable folder.</p>
+      <div class="chips">
+        <span class="chip">PHP 8.3</span>
+        <span class="chip">MariaDB</span>
+        <span class="chip">Custom CSS / Responsive UI</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">PWA (offline shell)</span>
+        <span class="chip">Portable desktop launcher</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 09: TEAM - eight authors copied from the manuscript cover ===== -->
+  <section id="team" style="background:#fff;border-top:1px solid var(--line);">
+    <div class="container">
+      <h2>Meet the team</h2>
+      <p class="sub">BS Industrial Technology, Major in Computer Technology &middot; Talisay City College &middot; November 2026</p>
+      <div class="team">
+        <!-- The cover listed names only - no individual roles were given -->
+        <div class="member"><span class="avatar">JC</span><span><strong>John Mark Cabornay</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">JC</span><span><strong>James Cabusas</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">DC</span><span><strong>Dave Corpuz</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">CE</span><span><strong>Cherry Grace Estrada</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">TG</span><span><strong>Tristhan Blaire S. Gimeda</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">KQ</span><span><strong>Kristeff Quintia</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">DR</span><span><strong>Dave Mathew Alexander Rosaroso</strong><small>Researcher</small></span></div>
+        <div class="member"><span class="avatar">AS</span><span><strong>Angelica C. Saballa</strong><small>Researcher</small></span></div>
+      </div>
+      <p class="note">Names are taken from the capstone manuscript cover.</p>
+    </div>
+  </section>
+
+  
+  <!-- ===== 11: RESOURCES - links to the two documents bundled in docs/ ===== -->
+  <section id="resources" style="background:#fff;border-top:1px solid var(--line);">
+    <div class="container">
+      <h2>Supporting documents</h2>
+      <p class="sub">Both files are bundled inside this folder, so the links work without internet access.</p>
+      <div class="resources">
+        <a href="docs/canteen-pos-appendix.html">Source code appendix (HTML) &rarr;</a>
+        <a href="docs/canteen-pos-rationale-of-the-program.docx">Rationale of the Program (DOCX) &darr;</a>
+      </div>
+      <p class="note">To share the site, copy the whole <code>canteen-pos-microsite</code> folder - including <code>assets/</code> and <code>docs/</code> - to a USB drive, web host or GitHub Pages.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ===== 12: FOOTER - repeated identity and quick links ===== -->
+<footer>
+  Smart POS Canteen System for Talisay City College &mdash; Capstone Project &middot; November 2026
+  <br><a href="docs/canteen-pos-appendix.html">Documentation appendix</a> &middot; <a href="#team">Project team</a> &middot; Web edition
+</footer>
+
+<!-- ===== 13: LIGHTBOX MARKUP - hidden overlay filled in by the script below ===== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Screenshot preview" aria-modal="true">
+  <button type="button" id="closeLightbox" aria-label="Close preview">&times;</button>
+  <img id="lightboxImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Enlarged screenshot"> <!-- Transparent 1x1 pixel until a gallery image is clicked (an empty src would reload this page) -->
+  <div class="caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+  /* ===== 14: JAVASCRIPT - only behaviour on the page: the screenshot lightbox ===== */
+  // STEP 1: Cache the three DOM elements the lightbox needs.
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+
+  // STEP 2: Make every gallery figure clickable.
+  document.querySelectorAll('.shots figure').forEach(function (figure) {
+    figure.addEventListener('click', function () {
+      var img = figure.querySelector('img');                 // The screenshot inside this figure
+      lightboxImg.src = img.src;                             // Copy its image into the overlay
+      lightboxImg.alt = img.alt;                             // Keep the accessible description
+      lightboxCaption.textContent = figure.getAttribute('data-caption') || ''; // Caption text
+      lightbox.classList.add('open');                        // CSS turns the overlay on
+    });
+  });
+
+  // STEP 3: Close helper - hides the overlay and clears the big image.
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightboxImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  }
+
+  // STEP 4: Wire up the three ways to close: X button, backdrop click, Escape key.
+  document.getElementById('closeLightbox').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
